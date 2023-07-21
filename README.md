@@ -4,7 +4,7 @@ Basically a canister developed to run on the ICP (Internet Computer Protocol) wr
 
 
 ### Instructions on Deploying and Testing the Canister  🛠.
-- To make use or test this canister localy you will be requiring the following installed in your local environment.
+- To make use or test this canister locally you will be requiring the following installed in your local environment.
 
 - [Node.js](https://nodejs.org/en/download). v18 or >.
 
