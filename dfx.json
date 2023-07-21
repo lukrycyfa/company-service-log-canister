@@ -1,0 +1,13 @@
+{
+  "canisters": {
+    "company_service_log": {
+      "main": "src/index.ts",
+      "type": "custom",
+      "build": "npx azle company_service_log",
+      "root": "src",
+      "ts": "src/index.ts",
+      "candid": "src/index.did",
+      "wasm": ".azle/company_service_log/company_service_log.wasm.gz"
+    }
+  }
+}

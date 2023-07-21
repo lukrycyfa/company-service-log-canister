@@ -1,0 +1,60 @@
+type Client = record {
+  id : text;
+  firstname : text;
+  createdAt : nat64;
+  email : text;
+  updatedAt : opt nat64;
+  requests : vec Request;
+  phone : text;
+  lastname : text;
+};
+type ClientPayload = record {
+  firstname : text;
+  email : text;
+  phone : text;
+  lastname : text;
+};
+type Request = record {
+  id : text;
+  reqSerId : text;
+  createdAt : nat64;
+  updatedAt : opt nat64;
+  attendedto : bool;
+};
+type ServicePayload = record { servicename : text; description : text };
+type _AzleResult = variant { Ok : Client; Err : text };
+type _AzleResult_1 = variant { Ok : _Service; Err : text };
+type _AzleResult_2 = variant { Ok : Request; Err : text };
+type _AzleResult_3 = variant { Ok : vec Client; Err : text };
+type _AzleResult_4 = variant { Ok : vec Request; Err : text };
+type _AzleResult_5 = variant { Ok : vec _Service; Err : text };
+type _InlineClientRequests = record {
+  id : text;
+  reqSerId : text;
+  createdAt : nat64;
+  updatedAt : opt nat64;
+  attendedto : bool;
+};
+type _Service = record {
+  id : text;
+  servicename : text;
+  createdAt : nat64;
+  requestcount : nat8;
+  description : text;
+  updatedAt : opt nat64;
+};
+service : () -> {
+  addClient : (ClientPayload) -> (_AzleResult);
+  addService : (ServicePayload) -> (_AzleResult_1);
+  checkOutRequest : (text, text) -> (_AzleResult_2);
+  deleteClient : (text) -> (_AzleResult);
+  deleteService : (text) -> (_AzleResult_1);
+  getClient : (text) -> (_AzleResult) query;
+  getClients : () -> (_AzleResult_3) query;
+  getClientsRequest : (text) -> (_AzleResult_4) query;
+  getService : (text) -> (_AzleResult_1) query;
+  getServices : () -> (_AzleResult_5) query;
+  requestService : (text, text) -> (_AzleResult_2);
+  updateClient : (text, ClientPayload) -> (_AzleResult);
+  updateService : (text, ServicePayload) -> (_AzleResult_1);
+}
