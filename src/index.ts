@@ -1,7 +1,6 @@
 // cannister code goes here
 import { $query, $update, Record, StableBTreeMap, Vec, match, 
-    Result, nat64, ic, nat8, Opt, int64, 
-    Principal } from 'azle';
+    Result, nat64, ic, nat8, Opt, int64 } from 'azle';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -12,7 +11,7 @@ type Client = Record<{
     firstname: string;
     lastname: string;
     email: string;
-    phone: string;
+    phone: int64;
     requests: Vec<Record<{
         id: string;
         reqSerId : string;
@@ -62,7 +61,7 @@ type ClientPayload = Record<{
     firstname: string;
     lastname: string;
     email: string;
-    phone: string;
+    phone: int64;
 }>
 
 
@@ -133,6 +132,7 @@ export function getClientsRequest(id: string): Result<Vec<Request>, string> {
 $update;
 export function addService(payload: ServicePayload): Result<_Service, string> {
     // create new service object in serviceStorage
+    if((payload.description.length <= 0  || payload.servicename.length <= 0)) return Result.Err<_Service, string>(`invalid input`);
     const service: _Service = { id: uuidv4(), requestcount: 0,  createdAt: ic.time(),  updatedAt: Opt.None, ...payload };
     serviceStorage.insert(service.id, service);
     return Result.Ok(service);
@@ -145,7 +145,7 @@ $update;
 export function addClient(payload: ClientPayload): Result<Client, string> {
     // create new client object in clientStorage
     // validates the phone input value
-    if (!Number(payload.phone)) return Result.Err<Client, string>(`provided phone input value is invalid`)
+    if((payload.firstname.length <= 0  || payload.lastname.length <= 0 || payload.email.length <= 0)) return Result.Err<Client, string>(`invalid input`);
     const client: Client = { id: uuidv4(),  
         createdAt: ic.time(),  
         updatedAt: Opt.None,
@@ -230,7 +230,7 @@ export function updateClient(cid: string,  payload:ClientPayload): Result<Client
     return match(clientStorage.get(cid), {
         Some: (client) =>{
             // validates the phone input value
-            if (!Number(payload.phone)) return Result.Err<Client, string>(`provided phone input value is invalid`)
+            if((payload.firstname.length <= 0  || payload.lastname.length <= 0 || payload.email.length <= 0)) return Result.Err<Client, string>(`invalid input`);
             const updatedClient : Client = {...client,  ...payload,  updatedAt: Opt.Some(ic.time())};  
             clientStorage.insert(client.id, updatedClient);
             return Result.Ok<Client, string>(updatedClient);
@@ -250,6 +250,7 @@ export function updateService(sid: string,  payload:ServicePayload): Result<_Ser
     // and updates returned service object or return Err
     return match(serviceStorage.get(sid), {
         Some: (service) =>{
+            if((payload.description.length <= 0  || payload.servicename.length <= 0)) return Result.Err<_Service, string>(`invalid input`);
             const updatedService : _Service = {...service,  ...payload,  updatedAt: Opt.Some(ic.time())};  
             serviceStorage.insert(service.id, updatedService);
             return Result.Ok<_Service, string>(updatedService);
