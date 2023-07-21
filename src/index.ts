@@ -109,9 +109,7 @@ export function getClient(id: string): Result<Client, string> {
     return match(clientStorage.get(id), {
         Some: (client) => Result.Ok<Client, string>(client),
         None: () => Result.Err<Client, string>(`a client with id=${id} not found`)
-
     });
-
 }
 
 /**
@@ -132,8 +130,16 @@ export function getClientsRequest(id: string): Result<Vec<Request>, string> {
 $update;
 export function addService(payload: ServicePayload): Result<_Service, string> {
     // create new service object in serviceStorage
-    if((payload.description.length <= 0  || payload.servicename.length <= 0)) return Result.Err<_Service, string>(`invalid input`);
-    const service: _Service = { id: uuidv4(), requestcount: 0,  createdAt: ic.time(),  updatedAt: Opt.None, ...payload };
+    if (payload.description.length <= 0 || payload.servicename.length <= 0) {
+        return Result.Err<_Service, string>(`invalid input`);
+    }
+    const service: _Service = {
+        id: uuidv4(),
+        requestcount: 0,
+        createdAt: ic.time(),
+        updatedAt: Opt.None,
+        ...payload,
+    };
     serviceStorage.insert(service.id, service);
     return Result.Ok(service);
 }
@@ -145,12 +151,16 @@ $update;
 export function addClient(payload: ClientPayload): Result<Client, string> {
     // create new client object in clientStorage
     // validates the phone input value
-    if((payload.firstname.length <= 0  || payload.lastname.length <= 0 || payload.email.length <= 0)) return Result.Err<Client, string>(`invalid input`);
-    const client: Client = { id: uuidv4(),  
-        createdAt: ic.time(),  
+    if (payload.firstname.length <= 0 || payload.lastname.length <= 0 || payload.email.length <= 0) {
+        return Result.Err<Client, string>(`invalid input`);
+    }
+    const client: Client = {
+        id: uuidv4(),
+        createdAt: ic.time(),
         updatedAt: Opt.None,
-        requests: [], 
-        ...payload };
+        requests: [],
+        ...payload,
+    };
     clientStorage.insert(client.id, client);
     return Result.Ok(client);
 }
@@ -160,31 +170,40 @@ export function addClient(payload: ClientPayload): Result<Client, string> {
  * 'Client Id' as parameters
  */
 $update;
-export function requestService(sid: string, cid: string): Result<Request, string>{
+export function requestService(sid: string, cid: string): Result<Request, string> {
     // look-up and return data from serviceStorage, clientStorage with associated cid & sid 
     // and creates a new request object in requestStorage or return Err 
     return match(serviceStorage.get(sid), {
         Some: (service) => {
             return match(clientStorage.get(cid), {
-                Some: (client) =>{
-                    const newRequest: Request = { id: uuidv4(),
-                        reqSerId: service.id, 
+                Some: (client) => {
+                    const newRequest: Request = {
+                        id: uuidv4(),
+                        reqSerId: service.id,
                         attendedto: false,
-                        createdAt: ic.time(), 
-                        updatedAt: Opt.None }; 
-                    const updatedClient : Client = {...client, updatedAt: Opt.Some(ic.time()) ,requests: [...client.requests, newRequest]};
-                    const updatedService : _Service = {...service, requestcount: service.requestcount+1, updatedAt: Opt.Some(ic.time())  }   
+                        createdAt: ic.time(),
+                        updatedAt: Opt.None,
+                    };
+                    const updatedClient: Client = {
+                        ...client,
+                        updatedAt: Opt.Some(ic.time()),
+                        requests: [...client.requests, newRequest],
+                    };
+                    const updatedService: _Service = {
+                        ...service,
+                        requestcount: service.requestcount + 1,
+                        updatedAt: Opt.Some(ic.time()),
+                    };
                     requestStorage.insert(newRequest.id, newRequest);
                     clientStorage.insert(client.id, updatedClient);
                     serviceStorage.insert(service.id, updatedService);
                     return Result.Ok<Request, string>(newRequest);
                 },
-                None: () => Result.Err<Request, string>(`a client with id=${cid} not found`)
+                None: () => Result.Err<Request, string>(`a client with id=${cid} not found`),
             });
         },
-        None: () => Result.Err<Request, string>(`a service with id=${sid} not found`)
+        None: () => Result.Err<Request, string>(`a service with id=${sid} not found`),
     });
-
 }
 
 /**
@@ -196,27 +215,31 @@ export function checkOutRequest(cid: string, rid: string): Result<Request, strin
     // look-up and return data from requestStorage, clientStorage with associated cid & rid 
     // and updates returned request and client objects or return Err 
     return match(clientStorage.get(cid), {
-        Some: (client)=>{
+        Some: (client) => {
             return match(requestStorage.get(rid), {
-                Some: (request)=>{
+                Some: (request) => {
                     let cli = client.requests;
-                    let idx = cli.findIndex((id)=> id.id === rid);
+                    let idx = cli.findIndex((id) => id.id === rid);
                     // validates the client is associated with the request
-                    if (idx < 0) return Result.Err<Request, string>(`couldn't find a request rid=${rid} associated with cid=${cid}.`)
-                    const updateRequest: Request = {...request,
-                        reqSerId: request.reqSerId, 
+                    if (idx < 0) {
+                        return Result.Err<Request, string>(`couldn't find a request rid=${rid} associated with cid=${cid}.`);
+                    }
+                    const updateRequest: Request = {
+                        ...request,
+                        reqSerId: request.reqSerId,
                         attendedto: true,
-                        updatedAt: Opt.Some(ic.time()) };
-                    requestStorage.insert(request.id, updateRequest);     
-                    const updatedClient : Client = {...client, updatedAt: Opt.Some(ic.time())};
-                    clientStorage.insert(client.id, updatedClient);    
+                        updatedAt: Opt.Some(ic.time()),
+                    };
+                    requestStorage.insert(request.id, updateRequest);
+                    const updatedClient: Client = { ...client, updatedAt: Opt.Some(ic.time()) };
+                    clientStorage.insert(client.id, updatedClient);
                     return Result.Ok<Request, string>(updateRequest);
                 },
-                None:() => Result.Err<Request, string>(`a request with id=${rid} not found`)
-            })
+                None: () => Result.Err<Request, string>(`a request with id=${rid} not found`),
+            });
         },
-        None: () => Result.Err<Request, string>(`a client with id=${cid} not found`)
-    })
+        None: () => Result.Err<Request, string>(`a client with id=${cid} not found`),
+    });
 }
 
 /**
@@ -224,20 +247,21 @@ export function checkOutRequest(cid: string, rid: string): Result<Request, strin
  * 'Client Payload' as parameters
  */
 $update;
-export function updateClient(cid: string,  payload:ClientPayload): Result<Client, string>{
+export function updateClient(cid: string, payload: ClientPayload): Result<Client, string> {
     // look-up and return data from clientStorage with associated cid
     // and updates returned client object or return Err
     return match(clientStorage.get(cid), {
-        Some: (client) =>{
+        Some: (client) => {
             // validates the phone input value
-            if((payload.firstname.length <= 0  || payload.lastname.length <= 0 || payload.email.length <= 0)) return Result.Err<Client, string>(`invalid input`);
-            const updatedClient : Client = {...client,  ...payload,  updatedAt: Opt.Some(ic.time())};  
+            if (payload.firstname.length <= 0 || payload.lastname.length <= 0 || payload.email.length <= 0) {
+                return Result.Err<Client, string>(`invalid input`);
+            }
+            const updatedClient: Client = { ...client, ...payload, updatedAt: Opt.Some(ic.time()) };
             clientStorage.insert(client.id, updatedClient);
             return Result.Ok<Client, string>(updatedClient);
         },
-        None: () => Result.Err<Client, string>(`a client with id=${cid} not found`)
+        None: () => Result.Err<Client, string>(`a client with id=${cid} not found`),
     });
-      
 }
 
 /**
@@ -245,19 +269,20 @@ export function updateClient(cid: string,  payload:ClientPayload): Result<Client
  * 'Service Payload' as parameters
  */
 $update;
-export function updateService(sid: string,  payload:ServicePayload): Result<_Service, string>{
+export function updateService(sid: string, payload: ServicePayload): Result<_Service, string> {
     // look-up and return data from serviceStorage with associated sid
     // and updates returned service object or return Err
     return match(serviceStorage.get(sid), {
-        Some: (service) =>{
-            if((payload.description.length <= 0  || payload.servicename.length <= 0)) return Result.Err<_Service, string>(`invalid input`);
-            const updatedService : _Service = {...service,  ...payload,  updatedAt: Opt.Some(ic.time())};  
+        Some: (service) => {
+            if (payload.description.length <= 0 || payload.servicename.length <= 0) {
+                return Result.Err<_Service, string>(`invalid input`);
+            }
+            const updatedService: _Service = { ...service, ...payload, updatedAt: Opt.Some(ic.time()) };
             serviceStorage.insert(service.id, updatedService);
             return Result.Ok<_Service, string>(updatedService);
         },
-        None: () => Result.Err<_Service, string>(`a service with id=${sid} not found`)
+        None: () => Result.Err<_Service, string>(`a service with id=${sid} not found`),
     });
-      
 }
 
 /**
@@ -268,12 +293,13 @@ export function deleteClient(id: string): Result<Client, string> {
     // look-up and delete data from clientStorage with associated id or return Err
     return match(clientStorage.get(id), {
         Some: (deletedclient) => {
-            deletedclient.requests.forEach((r)=>{
+            deletedclient.requests.forEach((r) => {
                 requestStorage.remove(r.id);
             });
             clientStorage.remove(id);
-            return Result.Ok<Client, string>(deletedclient)},
-        None: () => Result.Err<Client, string>(`couldn't delete a client with id=${id}. message not found.`)
+            return Result.Ok<Client, string>(deletedclient);
+        },
+        None: () => Result.Err<Client, string>(`couldn't delete a client with id=${id}. message not found.`),
     });
 }
 
@@ -286,24 +312,26 @@ export function deleteService(id: string): Result<_Service, string> {
     return match(serviceStorage.get(id), {
         Some: (service) => {
             let requests = requestStorage.values();
-            let idx = requests.findIndex((rid)=> rid.reqSerId === id && rid.attendedto === false);
-            // validates all clients where attended to before deleting the service
-            if (idx >= 0) return Result.Err<_Service, string>(`couldn't delete a service with id=${id}. clients request not attended to.`)
-            serviceStorage.remove(id)
-            return Result.Ok<_Service, string>(service)},            
-        None: () => Result.Err<_Service, string>(`couldn't delete a service with id=${id}. message not found.`)
+            let idx = requests.findIndex((rid) => rid.reqSerId === id && rid.attendedto === false);
+            // validates all clients were attended to before deleting the service
+            if (idx >= 0) {
+                return Result.Err<_Service, string>(`couldn't delete a service with id=${id}. clients request not attended to.`);
+            }
+            serviceStorage.remove(id);
+            return Result.Ok<_Service, string>(service);
+        },
+        None: () => Result.Err<_Service, string>(`couldn't delete a service with id=${id}. message not found.`),
     });
 }
 
-
 globalThis.crypto = {
     getRandomValues: () => {
-        let array = new Uint8Array(32)
+        let array = new Uint8Array(32);
 
         for (let i = 0; i < array.length; i++) {
-            array[i] = Math.floor(Math.random() * 256)
+            array[i] = Math.floor(Math.random() * 256);
         }
 
-        return array
-    }
-}
+        return array;
+    },
+};
