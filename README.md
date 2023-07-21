@@ -19,7 +19,7 @@ git clone https://github.com/lukrycyfa/company-service-log-canister.git
 cd company-service-log-canister
 npm install
 ```
-- Or you optionaly use Github Codespaces to test the project by following this link [company-service-log](https://github.com/lukrycyfa/company-service-log-canister), clicking on the "Code" button, then select "Create codespace on the main tab". to generate a new Codespace, pre-configured with everything you need to start building this project.
+- Or you optionaly use Github Codespaces to test the project by clicking on the "Code" button, then select "Create codespace on the main tab". to generate a new Codespace, pre-configured with everything you need to start building this project.
 
 #### Setting up the terminal
 - Install node version manager (NVM)
@@ -27,7 +27,7 @@ npm install
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 ```
-- Switch to node v18 by issuing
+- Switch to node v18 by issuing this command
 
 ```bash
 nvm use 18
