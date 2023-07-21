@@ -2,7 +2,6 @@
 Basically a canister developed to run on the ICP (Internet Computer Protocol) written in typeScript and libraries from the Azle framework CDK (Canister Development Kit), having functionalities and utilities to assist in managing a companies services, clients and keeping track of clients requests made to services and logs with a CRUD modal.
 
 
-https://github.com/lukrycyfa/company-service-log-canister
 
 ### Instructions on Deploying and Testing the Canister  🛠.
 - To make use or test this canister localy you will be requiring the following installed in your local environment.
