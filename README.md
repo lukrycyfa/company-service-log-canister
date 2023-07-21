@@ -19,7 +19,7 @@ git clone https://github.com/lukrycyfa/company-service-log-canister.git
 cd company-service-log-canister
 npm install
 ```
-- Or you optionaly use Github Codespaces to test the project by clicking on the "Code" button, then select "Create codespace on the main tab". to generate a new Codespace, pre-configured with everything you need to start building this project.
+- Or you optionaly use Github Codespaces to test the project by clicking on the "Code" button, navigating to the codespaces tab then select "Create codespace on main". to generate a new Codespace, pre-configured with everything you need to start building this project.
 
 #### Setting up the terminal
 - Install node version manager (NVM)
