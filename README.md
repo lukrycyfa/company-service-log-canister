@@ -19,7 +19,7 @@ git clone https://github.com/lukrycyfa/company-service-log-canister.git
 cd company-service-log-canister
 npm install
 ```
-- Or you optionaly use Github Codespaces to test the project by clicking on the "Code" button, navigating to the codespaces tab then select "Create codespace on main". to generate a new Codespace, pre-configured with everything you need to start building this project.
+- Or you can optionally use Github Codespaces to test the project by clicking on the "Code" button, navigating to the codespaces tab then select "Create codespace on main". to generate a new Codespace, pre-configured with everything you need to start building this project.
 
 #### Setting up the terminal
 - Install node version manager (NVM)
@@ -79,4 +79,7 @@ dfx canister call company_service_log the-function '("args", "args")'
 - example
 ```bash
 dfx canister call company_service_log getService '("79daba82-18ce-4f69-afa1-7b3389368d1f")'
+```
+```bash
+dfx canister call company_service_log addService '(record {"servicename"= "Data Analysis"; "description"= "Provide predictable outcomes from provided data"})'
 ```
