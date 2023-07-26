@@ -5,13 +5,13 @@ type Client = record {
   email : text;
   updatedAt : opt nat64;
   requests : vec Request;
-  phone : text;
+  phone : int64;
   lastname : text;
 };
 type ClientPayload = record {
   firstname : text;
   email : text;
-  phone : text;
+  phone : int64;
   lastname : text;
 };
 type Request = record {
